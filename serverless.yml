@@ -1,0 +1,54 @@
+service: zazu-africa-rest-api
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-west-2
+  stage: ${opt:stage, 'dev'}
+  environment:
+    ENVIRONMENT: ${self:provider.stage}
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - dynamodb:UpdateItem
+            - dynamodb:GetItem
+            - dynamodb:DeleteItem
+            - dynamodb:PutItem
+          Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/todo
+
+custom:
+  serverless-offline:
+    host: 0.0.0.0
+    httpPort: 3001
+
+functions:
+  createItem:
+    handler: src/functions/todo.createHandler
+    events:
+      - http:
+          path: /api/todo
+          method: post
+  deleteUser:
+    handler: src/functions/todo.deleteHandler
+    events:
+      - http:
+          path: /api/todo/{todoId}
+          method: delete
+  getUser:
+    handler: src/functions/todo.getHandler
+    events:
+      - http:
+          path: /api/todo/{todoId}
+          method: get
+  patchUser:
+    handler: src/functions/todo.patchHandler
+    events:
+      - http:
+          path: /api/todo/{todoId}
+          method: patch
