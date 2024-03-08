@@ -17,9 +17,13 @@
   },
   "homepage": "https://github.com/n6rayan/zazu-africa-tech-test#readme",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.136",
     "serverless": "^3.38.0",
     "serverless-offline": "^13.3.3",
     "serverless-plugin-typescript": "^2.1.5",
     "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "aws-lambda": "^1.0.7"
   }
 }

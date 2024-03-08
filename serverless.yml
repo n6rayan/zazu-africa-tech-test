@@ -20,7 +20,7 @@ provider:
             - dynamodb:GetItem
             - dynamodb:DeleteItem
             - dynamodb:PutItem
-          Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/todo
+          Resource: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/todo
 
 custom:
   serverless-offline:
@@ -29,25 +29,25 @@ custom:
 
 functions:
   createItem:
-    handler: src/functions/todo.createHandler
+    handler: src/functions/todo.postTodo
     events:
       - http:
           path: /api/todo
           method: post
   deleteUser:
-    handler: src/functions/todo.deleteHandler
+    handler: src/functions/todo.deleteTodo
     events:
       - http:
           path: /api/todo/{todoId}
           method: delete
   getUser:
-    handler: src/functions/todo.getHandler
+    handler: src/functions/todo.getTodo
     events:
       - http:
           path: /api/todo/{todoId}
           method: get
   patchUser:
-    handler: src/functions/todo.patchHandler
+    handler: src/functions/todo.patchTodo
     events:
       - http:
           path: /api/todo/{todoId}
