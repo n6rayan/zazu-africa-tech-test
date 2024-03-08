@@ -1,14 +1,16 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { v4 as uuid } from 'uuid';
 
 import { createItem, deleteItem, getItem, updateItem } from '../libs/dynamo';
-import { ToDo } from '../types';
+import { CreateToDoPayload, ToDo, UpdateToDoPayload } from '../types';
 
 export const createTodo = async (event: APIGatewayProxyEvent) => {
-  console.log('Event received: ', event);
+  console.log('Event received: ', JSON.stringify(event));
 
   const body: { description: string } = JSON.parse(event.body ?? '{}');
 
-  const todo: ToDo = {
+  const todoPayload: CreateToDoPayload = {
+    id: uuid(),
     description: body.description,
     complete: false,
     createdAt: new Date().toISOString(),
@@ -16,7 +18,12 @@ export const createTodo = async (event: APIGatewayProxyEvent) => {
   };
 
   try {
-    createItem(todo);
+    const todo = await createItem(todoPayload);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(todo.Attributes ?? todoPayload),
+    };
   } catch (err) {
     console.log('Problem creating todo in Dynamo: ', err);
 
@@ -27,27 +34,35 @@ export const createTodo = async (event: APIGatewayProxyEvent) => {
       }),
     };
   }
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(todo),
-  };
 };
 
 export const updateTodo = async (event: APIGatewayProxyEvent) => {
-  console.log('Event received: ', event);
+  console.log('Event received: ', JSON.stringify(event));
 
   const body: { description: string, completed: boolean } = JSON.parse(event.body ?? '{}');
   const { pathParameters } = event;
 
-  const todo: ToDo = {
+  const todoPayload: UpdateToDoPayload = {
     description: body.description,
     complete: body.completed,
     modifiedAt: new Date().toISOString(),
   };
 
   try {
-    updateItem(pathParameters?.todoId, todo);
+    const { Attributes: values } = await updateItem(pathParameters?.todoId, todoPayload);
+
+    const response = {
+      id: values?.id.S,
+      description: values?.description.S,
+      complete: values?.complete.BOOL,
+      modifiedAt: values?.modifiedAt.S,
+      updatedAt: values?.updatedAt.S,
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(response),
+    };
   } catch (err) {
     console.log('Problem updating todo in Dynamo: ', err);
 
@@ -58,20 +73,15 @@ export const updateTodo = async (event: APIGatewayProxyEvent) => {
       }),
     };
   }
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(todo),
-  };
 };
 
 export const removeTodo = async (event: APIGatewayProxyEvent) => {
-  console.log('Event received: ', event);
+  console.log('Event received: ', JSON.stringify(event));
 
   const { pathParameters } = event;
 
   try {
-    deleteItem(pathParameters?.todoId);
+    await deleteItem(pathParameters?.todoId);
   } catch (err) {
     console.log('Problem deleting todo in Dynamo: ', err);
 
@@ -90,12 +100,17 @@ export const removeTodo = async (event: APIGatewayProxyEvent) => {
 };
 
 export const retrieveTodo = async (event: APIGatewayProxyEvent) => {
-  console.log('Event received: ', event);
+  console.log('Event received: ', JSON.stringify(event));
 
   const { pathParameters } = event;
 
   try {
-    getItem(pathParameters?.todoId);
+    const todo = await getItem(pathParameters?.todoId);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify(todo.Item),
+    };
   } catch (err) {
     console.log('Problem retrieving todo in Dynamo: ', err);
 
@@ -106,15 +121,4 @@ export const retrieveTodo = async (event: APIGatewayProxyEvent) => {
       }),
     };
   }
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      id: 'some-id',
-      description: 'some description',
-      complete: true,
-      createdAt: new Date().toISOString(),
-      modifiedAt: new Date().toISOString(),
-    }),
-  };
 };

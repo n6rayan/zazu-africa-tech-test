@@ -20,7 +20,7 @@ provider:
             - dynamodb:GetItem
             - dynamodb:DeleteItem
             - dynamodb:PutItem
-          Resource: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/todo
+          Resource: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/todo-table
 
 custom:
   serverless-offline:

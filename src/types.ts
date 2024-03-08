@@ -1,7 +1,10 @@
 export interface ToDo {
-  id?: string;
+  id: string;
   description: string;
   complete: boolean;
-  createdAt?: string;
-  modifiedAt?: string; 
+  createdAt: string;
+  modifiedAt: string; 
 }
+
+export type CreateToDoPayload = ToDo;
+export type UpdateToDoPayload = Omit<ToDo, 'id' | 'createdAt'>;

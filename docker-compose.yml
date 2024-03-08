@@ -1,0 +1,50 @@
+version: "3"
+services:
+  dynamodb:
+    container_name: dynamodb
+    image: amazon/dynamodb-local
+    ports:
+      - 8000:8000
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ."
+    healthcheck:
+      test: java -version
+      interval: 10s
+      timeout: 2s
+      retries: 10
+
+  api:
+    container_name: api
+    build: .
+    tty: true
+    ports:
+      - "3001:3001"
+    environment:
+      AWS_REGION: eu-west-2
+      AWS_DYNAMODB_ENDPOINT: http://dynamodb:8000
+    volumes:
+      - ./:/home/node/app:cached
+    command: sh -c '
+      npx sls config credentials --overwrite --provider aws --key KEY --secret SECRET &&
+      npm start'
+    depends_on:
+      dynamodb:
+        condition: service_healthy
+  
+  awscli:
+    container_name: awscli
+    image: amazon/aws-cli
+    environment:
+      AWS_ACCESS_KEY_ID: KEY
+      AWS_SECRET_ACCESS_KEY: SECRET
+      AWS_REGION: eu-west-2
+    entrypoint: /bin/sh
+    command: -c '
+      aws --version &&
+      aws dynamodb --endpoint-url http://dynamodb:8000
+      create-table --table-name todo-table
+      --attribute-definitions AttributeName=id,AttributeType=S
+      --key-schema AttributeName=id,KeyType=HASH
+      --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5'
+    depends_on:
+      dynamodb:
+        condition: service_healthy
