@@ -39,7 +39,9 @@ export const createTodo = async (event: APIGatewayProxyEvent) => {
 export const updateTodo = async (event: APIGatewayProxyEvent) => {
   console.log('Event received: ', JSON.stringify(event));
 
-  const body: { description: string, completed: boolean } = JSON.parse(event.body ?? '{}');
+  const body: { description: string; completed: boolean } = JSON.parse(
+    event.body ?? '{}'
+  );
   const { pathParameters } = event;
 
   const todoPayload: UpdateToDoPayload = {
@@ -49,7 +51,12 @@ export const updateTodo = async (event: APIGatewayProxyEvent) => {
   };
 
   try {
-    const { Attributes: values } = await updateItem(pathParameters?.todoId, todoPayload);
+    const { Attributes: values } = await updateItem(
+      pathParameters?.todoId,
+      todoPayload
+    );
+
+    console.log(values);
 
     const response = {
       id: values?.id.S,
@@ -57,7 +64,7 @@ export const updateTodo = async (event: APIGatewayProxyEvent) => {
       complete: values?.complete.BOOL,
       modifiedAt: values?.modifiedAt.S,
       updatedAt: values?.updatedAt.S,
-    }
+    };
 
     return {
       statusCode: 200,
@@ -95,7 +102,7 @@ export const removeTodo = async (event: APIGatewayProxyEvent) => {
 
   return {
     statusCode: 204,
-    body: JSON.stringify({})
+    body: JSON.stringify({}),
   };
 };
 

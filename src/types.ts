@@ -3,7 +3,7 @@ export interface ToDo {
   description: string;
   complete: boolean;
   createdAt: string;
-  modifiedAt: string; 
+  modifiedAt: string;
 }
 
 export type CreateToDoPayload = ToDo;

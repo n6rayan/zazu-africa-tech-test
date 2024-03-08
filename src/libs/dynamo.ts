@@ -14,12 +14,14 @@ import {
   UpdateItemInput,
 } from '@aws-sdk/client-dynamodb';
 
-import { CreateToDoPayload, UpdateToDoPayload } from "../types";
+import { CreateToDoPayload, UpdateToDoPayload } from '../types';
 import config from '../config';
 
 const client = new DynamoDBClient({ ...config.dynamodb });
 
-export const createItem = async (data: CreateToDoPayload): Promise<PutItemCommandOutput> => {
+export const createItem = async (
+  data: CreateToDoPayload
+): Promise<PutItemCommandOutput> => {
   const input: PutItemInput = {
     TableName: 'todo-table',
     Item: {
@@ -36,8 +38,8 @@ export const createItem = async (data: CreateToDoPayload): Promise<PutItemComman
         S: data.createdAt,
       },
       modifiedAt: {
-        S: data.modifiedAt
-      }
+        S: data.modifiedAt,
+      },
     },
     // @todo: For some reason DDB is not returning the values on insert
     ReturnValues: 'ALL_OLD',
@@ -45,36 +47,45 @@ export const createItem = async (data: CreateToDoPayload): Promise<PutItemComman
 
   const command = new PutItemCommand(input);
   return await client.send(command);
-}
+};
 
-export const updateItem = async (id: string | undefined, data: UpdateToDoPayload): Promise<UpdateItemCommandOutput> => {
+export const updateItem = async (
+  id: string | undefined,
+  data: UpdateToDoPayload
+): Promise<UpdateItemCommandOutput> => {
   const input: UpdateItemInput = {
     TableName: 'todo-table',
     Key: {
       id: {
         S: String(id),
-      }
+      },
     },
     AttributeUpdates: {
-      ...(data.description && { description: {
-        Value: {S: data.description,},
-        Action: 'PUT'
-      }}),
-      ...(data.complete && { complete: {
-        Value: { BOOL: data.complete, },
-        Action: 'PUT'
-      }}),
-      ...(data.modifiedAt && { modifiedAt: {
-        Value: { S: data.modifiedAt, },
-        Action: 'PUT'
-      }}),
+      ...(data.description && {
+        description: {
+          Value: { S: data.description },
+          Action: 'PUT',
+        },
+      }),
+      ...(data.complete && {
+        complete: {
+          Value: { BOOL: data.complete },
+          Action: 'PUT',
+        },
+      }),
+      ...(data.modifiedAt && {
+        modifiedAt: {
+          Value: { S: data.modifiedAt },
+          Action: 'PUT',
+        },
+      }),
     },
     ReturnValues: 'ALL_NEW',
   };
 
   const command = new UpdateItemCommand(input);
   return await client.send(command);
-}
+};
 
 export const deleteItem = async (
   id: string | undefined
@@ -92,7 +103,9 @@ export const deleteItem = async (
   return await client.send(command);
 };
 
-export const getItem = async (id: string | undefined): Promise<GetItemCommandOutput> => {
+export const getItem = async (
+  id: string | undefined
+): Promise<GetItemCommandOutput> => {
   const params: GetItemInput = {
     TableName: 'todo-table',
     Key: {
