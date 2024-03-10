@@ -24,19 +24,17 @@ describe('Read ToDo', () => {
     todoTwo = createTwo.body;
   });
 
-  // afterAll(async () => {
-  //   // perform cleanup
-  //   await Promise.all([request.delete(`/api/todos/${todoOne.id}`), request.delete(`/api/todos/${todoTwo.id}`)]);
-  // })
+  afterAll(async () => {
+    // perform cleanup
+    await Promise.all([request.delete(`/api/todos/${todoOne.id}`), request.delete(`/api/todos/${todoTwo.id}`)]);
+  })
 
   describe('GET /todos', () => {
     it('should return a 200 and all the todos', async () => {
       const response = await request.get('/api/todos');
 
       expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual({
-        todos: expect.arrayContaining([todoOne, todoTwo]),
-      });
+      expect(response.body).toEqual(expect.arrayContaining([todoOne, todoTwo]));
     });
   });
 

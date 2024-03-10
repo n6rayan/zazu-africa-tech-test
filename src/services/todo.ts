@@ -154,7 +154,7 @@ export const retrieveTodos = async (event: APIGatewayProxyEvent) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ todos }),
+      body: JSON.stringify(todos),
     };
   } catch (err: any) {
     console.log('Problem retrieving the todo item from Dynamo: ', err);

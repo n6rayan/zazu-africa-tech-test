@@ -1,0 +1,163 @@
+openapi: 3.0.1
+info:
+  title: Zazu Africa Test REST API
+  description: Zazu Africa Test REST API
+  version: 'v1'
+servers:
+  - url: https://some-url/api
+    description: Deployed environment
+  - url: http://localhost:{port}
+    description: Local development environment
+    variables:
+      port:
+        default: '3001'
+
+paths:
+  /todos:
+    post:
+      summary: Create ToDO
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  $ref: '#/components/schemas/ToDoDescription'
+              required:
+                - description
+      responses:
+        201:
+          $ref: "#/components/responses/ToDoOKResponse"
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+    get:
+      summary: Get all ToDOs
+      responses:
+        200:
+          description: Get all todo items success response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ToDo'
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+
+  /todos/{id}:
+    patch:
+      summary: Update ToDO
+      parameters:
+        - $ref: '#/components/parameters/ToDoIDParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                description:
+                  $ref: '#/components/schemas/ToDoDescription'
+                complete:
+                  $ref: '#/components/schemas/ToDoComplete'
+      responses:
+        200:
+          $ref: "#/components/responses/ToDoOKResponse"
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+    
+    get:
+      summary: Retrieve ToDO
+      parameters:
+        - $ref: '#/components/parameters/ToDoIDParam'
+      responses:
+        200:
+          $ref: "#/components/responses/ToDoOKResponse"
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+
+    delete:
+      summary: Delete ToDO
+      parameters:
+        - $ref: '#/components/parameters/ToDoIDParam'
+      responses:
+        204:
+          description: Delete todo item success response - no body
+        500:
+          $ref: '#/components/responses/UnexpectedError'
+
+components:
+  parameters:
+    ToDoIDParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/ToDoID'
+
+  responses:
+    ToDoOKResponse:
+      description: Todo item success response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ToDo'
+
+    UnexpectedError:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: Unexpected error
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ToDo:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ToDoID'
+        description:
+          $ref: '#/components/schemas/ToDoDescription'
+        complete:
+          $ref: "#/components/schemas/ToDoComplete"
+        createdAt:
+          $ref: '#/components/schemas/ToDoCreatedAt'
+        modifiedAt:
+          $ref: '#/components/schemas/ToDoModifiedAt'
+
+    ToDoID:
+      type: string
+      description: UUID of todo item
+      example: c65ca631-3a52-4a0d-871b-ffff36ef0fde
+
+    ToDoDescription:
+      type: string
+      description: Description of todo item
+      example: some description
+    
+    ToDoComplete:
+      type: boolean
+      description: Whether the item is complete or not
+      example: true
+
+    ToDoCreatedAt:
+      type: string
+      description: Time of creation
+      example: '2024-03-10T19:26:15.480Z'
+      format: date-time
+
+    ToDoModifiedAt:
+      type: string
+      description: Time of modification
+      example: '2024-03-10T19:26:15.480Z'
+      format: date-time
