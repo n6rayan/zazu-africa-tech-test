@@ -1,8 +1,8 @@
 # Zazu Africa Tech Test
 
-| Branch | Deploy status                                                                                                      | Build status                                                                                                 |
-| ------ | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
-| main   | [![Deploy status](https://github.com/n6rayan/zazu-africa-tech-test/actions/workflows/deploy.yml/badge.svg)][deploy] | [![Build status](https://github.com/n6rayan/zazu-africa-tech-test/actions/workflows/build.yml/badge.svg)][ci] |
+Technical test for Zazu Africa. A basic REST API with the ability to create a todo list and store the items in DynamoDB.
+
+## App (app directory)
 
 ### Install Dependencies
 - `npm i`
@@ -45,5 +45,4 @@ curl -v -X GET http://0.0.0.0:3001/dev/api/todos/{id}
 curl -v -X GET http://0.0.0.0:3001/dev/api/todos
 ```
 
-[ci]: https://github.com/n6rayan/zazu-africa-tech-test/actions/workflows/build.yml
-[deploy]: https://github.com/n6rayan/zazu-africa-tech-test/actions/workflows/deploy.yml
+## Infrastructure (infra directory)

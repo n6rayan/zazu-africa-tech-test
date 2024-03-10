@@ -25,6 +25,8 @@
     "@types/jest": "^29.5.12",
     "@types/supertest": "^2.0.16",
     "@types/uuid": "^9.0.8",
+    "aws-cdk": "^2.132.0",
+    "aws-cdk-lib": "^2.132.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-jest": "^27.9.0",
