@@ -12,6 +12,9 @@ import {
   UpdateItemCommand,
   UpdateItemCommandOutput,
   UpdateItemInput,
+  ScanCommand,
+  ScanCommandInput,
+  ScanCommandOutput,
 } from '@aws-sdk/client-dynamodb';
 
 import { CreateToDoPayload, UpdateToDoPayload } from '../types';
@@ -41,7 +44,7 @@ export const createItem = async (
         S: data.modifiedAt,
       },
     },
-    // @todo: For some reason DDB is not returning the values on insert
+    // @todo: For some reason DDB is not returning the values after insert
     ReturnValues: 'ALL_OLD',
   };
 
@@ -80,7 +83,7 @@ export const updateItem = async (
         },
       }),
     },
-    ReturnValues: 'ALL_NEW',
+    ReturnValues: 'ALL_OLD',
   };
 
   const command = new UpdateItemCommand(input);
@@ -116,5 +119,15 @@ export const getItem = async (
   };
 
   const command = new GetItemCommand(params);
+  return await client.send(command);
+};
+
+export const getItems = async (): Promise<ScanCommandOutput> => {
+  const params: ScanCommandInput = {
+    TableName: 'todo-table',
+    Select: 'ALL_ATTRIBUTES',
+  };
+
+  const command = new ScanCommand(params);
   return await client.send(command);
 };

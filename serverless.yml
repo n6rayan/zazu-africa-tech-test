@@ -32,23 +32,29 @@ functions:
     handler: src/functions/todo.postTodo
     events:
       - http:
-          path: /api/todo
+          path: /api/todos
           method: post
-  deleteUser:
+  deleteItem:
     handler: src/functions/todo.deleteTodo
     events:
       - http:
-          path: /api/todo/{todoId}
+          path: /api/todos/{todoId}
           method: delete
-  getUser:
+  getItem:
     handler: src/functions/todo.getTodo
     events:
       - http:
-          path: /api/todo/{todoId}
+          path: /api/todos/{todoId}
           method: get
-  patchUser:
+  getItems:
+    handler: src/functions/todo.getTodos
+    events:
+      - http:
+          path: /api/todos
+          method: get
+  patchItem:
     handler: src/functions/todo.patchTodo
     events:
       - http:
-          path: /api/todo/{todoId}
+          path: /api/todos/{todoId}
           method: patch

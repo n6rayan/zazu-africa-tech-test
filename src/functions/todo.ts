@@ -5,6 +5,7 @@ import {
   removeTodo,
   retrieveTodo,
   updateTodo,
+  retrieveTodos,
 } from '../services/todo';
 
 export const postTodo: APIGatewayProxyHandler = async (
@@ -16,6 +17,9 @@ export const deleteTodo: APIGatewayProxyHandler = async (
 export const getTodo: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ) => retrieveTodo(event);
+export const getTodos: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent
+) => retrieveTodos(event);
 export const patchTodo: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ) => updateTodo(event);
