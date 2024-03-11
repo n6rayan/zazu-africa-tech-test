@@ -13,7 +13,7 @@ Technical test for Zazu Africa. A basic REST API with the ability to create a to
 
 ### Run Integration Tests
 - Make sure the server is running locally (see above)
-- Run `npm test`
+- Run `npm run test:integration`
 
 ### Caveats
 - Serverless Offline prepends the stage to every endpoint, so if you define a `GET /todo` endpoint, when running it offline with a stage of `local`, it would actually be `GET /local/todo`
