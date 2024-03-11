@@ -46,3 +46,12 @@ curl -v -X GET http://0.0.0.0:3001/dev/api/todos
 ```
 
 ## Infrastructure (infra directory)
+
+### Install Dependencies
+- `npm i`
+
+### Deploy / Destroy
+- AWS_PROFILE=${PROFILE} aws sts assume-role --role-arn arn:aws:iam::${ACCOUNT_ID}:role/OrganizationAccountAccessRole --role-session-name cdk
+- Export above access key, secret key and session token into your terminal
+- `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk deploy` to deploy stack
+- `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk destroy` to destroy stack
