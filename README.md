@@ -55,3 +55,23 @@ curl -v -X GET http://0.0.0.0:3001/dev/api/todos
 - Export above access key, secret key and session token into your terminal
 - `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk deploy` to deploy stack
 - `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk destroy` to destroy stack
+
+## Rationales
+- Serverless framework used for the ease of Lambda / API Gateway creation
+- Zod for request/schema validation
+- Middy used for defining Lambda middleware, making use of custom Zod validator and middy body parser
+- Docker/serverless-offline for local development (see above)
+- Prettier/ESLint for code standards
+- Jest/Supertest for integration testing
+
+## Considerations
+- **Error Handling**:
+  - As mentioned in rationales, Zod is being used for validating incoming requests, mainly request bodies and path parameters
+  - With the combination of Middy, we can validate the events before the main application logic code is hit
+  - If validation passes, the logic for building the data and passing it to a Dynamo lib is wrapped in a try/catch
+  - The errors caught from these are logged for debugging purposes and a more generic error is returned to the end user
+
+- **Authentication**:
+  - There are various ways authentication can be implemented for the API
+  - Assuming some sort of user management system is in place e.g. Auth0 or Cognito, when the user signs in, their access token can be forwarded in the API requests
+  - Again, a customer middleware can be created to read in the event, grab the token and validate the token against the third party provider keys
