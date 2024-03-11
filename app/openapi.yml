@@ -29,7 +29,9 @@ paths:
                 - description
       responses:
         201:
-          $ref: "#/components/responses/ToDoOKResponse"
+          $ref: '#/components/responses/ToDoOKResponse'
+        400:
+          $ref: '#/components/responses/ValidationErrorResponse'
         500:
           $ref: '#/components/responses/UnexpectedError'
     get:
@@ -43,6 +45,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ToDo'
+        400:
+          $ref: '#/components/responses/ValidationErrorResponse'
         500:
           $ref: '#/components/responses/UnexpectedError'
 
@@ -64,7 +68,9 @@ paths:
                   $ref: '#/components/schemas/ToDoComplete'
       responses:
         200:
-          $ref: "#/components/responses/ToDoOKResponse"
+          $ref: '#/components/responses/ToDoOKResponse'
+        400:
+          $ref: '#/components/responses/ValidationErrorResponse'
         500:
           $ref: '#/components/responses/UnexpectedError'
     
@@ -74,7 +80,9 @@ paths:
         - $ref: '#/components/parameters/ToDoIDParam'
       responses:
         200:
-          $ref: "#/components/responses/ToDoOKResponse"
+          $ref: '#/components/responses/ToDoOKResponse'
+        400:
+          $ref: '#/components/responses/ValidationErrorResponse'
         500:
           $ref: '#/components/responses/UnexpectedError'
 
@@ -85,6 +93,8 @@ paths:
       responses:
         204:
           description: Delete todo item success response - no body
+        400:
+          $ref: '#/components/responses/ValidationErrorResponse'
         500:
           $ref: '#/components/responses/UnexpectedError'
 
@@ -98,6 +108,16 @@ components:
         $ref: '#/components/schemas/ToDoID'
 
   responses:
+    ValidationErrorResponse:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: string
+
     ToDoOKResponse:
       description: Todo item success response
       content:
@@ -129,7 +149,7 @@ components:
         description:
           $ref: '#/components/schemas/ToDoDescription'
         complete:
-          $ref: "#/components/schemas/ToDoComplete"
+          $ref: '#/components/schemas/ToDoComplete'
         createdAt:
           $ref: '#/components/schemas/ToDoCreatedAt'
         modifiedAt:
