@@ -22,7 +22,17 @@ describe('Update ToDo', () => {
   afterAll(async () => {
     // perform cleanup
     await request.delete(`/api/todos/${todo.id}`);
-  })
+  });
+
+  it('should return a 400 and validation errors', async () => {
+    const body = { description: 123 };
+    const response = await request.patch(`/api/todos/${todo.id}`).send(body);
+
+    expect(response.statusCode).toEqual(400);
+    expect(response.body).toEqual({
+      errors: 'Description must be a string'
+    });
+  });
 
   it('should return a 200 and update the row in the db', async () => {
     const updatePayload = payload({

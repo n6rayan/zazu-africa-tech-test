@@ -19,8 +19,7 @@ describe('Update ToDo', () => {
   });
 
   it('should return a 204 and delete the row in the db', async () => {
-    const response = await request
-      .delete(`/api/todos/${todo.id}`);
+    const response = await request.delete(`/api/todos/${todo.id}`);
 
     expect(response.statusCode).toEqual(204);
   });

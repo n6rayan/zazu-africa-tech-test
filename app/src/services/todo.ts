@@ -1,5 +1,6 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
+import { Event } from '@middy/http-json-body-parser';
 
 import {
   createItem,
@@ -8,12 +9,22 @@ import {
   updateItem,
   getItems,
 } from '../libs/dynamo';
-import { CreateToDoPayload, UpdateToDoPayload } from '../types';
+import {
+  CreateBody,
+  CreateToDoPayload,
+  UpdateBody,
+  UpdateToDoPayload,
+  UpdateParams,
+  DeleteParams,
+  GetParams,
+} from '../types';
 
-export const createTodo = async (event: APIGatewayProxyEvent) => {
+export const createTodo = async (
+  event: Event
+): Promise<APIGatewayProxyResult> => {
   console.log('Event received: ', JSON.stringify(event));
 
-  const body: { description: string } = JSON.parse(event.body ?? '{}');
+  const body: CreateBody = event.body as CreateBody;
 
   const todoPayload: CreateToDoPayload = {
     id: uuid(),
@@ -42,22 +53,20 @@ export const createTodo = async (event: APIGatewayProxyEvent) => {
   }
 };
 
-export const updateTodo = async (event: APIGatewayProxyEvent) => {
+export const updateTodo = async (event: Event) => {
   console.log('Event received: ', JSON.stringify(event));
 
-  const body: { description: string; complete: boolean } = JSON.parse(
-    event.body ?? '{}'
-  );
-  const { pathParameters } = event;
+  const body: UpdateBody = event.body as UpdateBody;
+  const params: UpdateParams = event.pathParameters as UpdateParams;
 
   const todoPayload: UpdateToDoPayload = {
-    description: body.description,
-    complete: body.complete,
+    ...(body.description && { description: body.description }),
+    ...(body.complete && { complete: body.complete }),
     modifiedAt: new Date().toISOString(),
   };
 
   try {
-    const todo = await updateItem(pathParameters?.todoId, todoPayload);
+    const todo = await updateItem(params.todoId, todoPayload);
 
     return {
       statusCode: 200,
@@ -81,13 +90,13 @@ export const updateTodo = async (event: APIGatewayProxyEvent) => {
   }
 };
 
-export const removeTodo = async (event: APIGatewayProxyEvent) => {
+export const removeTodo = async (event: Event) => {
   console.log('Event received: ', JSON.stringify(event));
 
-  const { pathParameters } = event;
+  const params: DeleteParams = event.pathParameters as DeleteParams;
 
   try {
-    await deleteItem(pathParameters?.todoId);
+    await deleteItem(params.todoId);
 
     return {
       statusCode: 204,
@@ -105,13 +114,13 @@ export const removeTodo = async (event: APIGatewayProxyEvent) => {
   }
 };
 
-export const retrieveTodo = async (event: APIGatewayProxyEvent) => {
+export const retrieveTodo = async (event: Event) => {
   console.log('Event received: ', JSON.stringify(event));
 
-  const { pathParameters } = event;
+  const params: GetParams = event.pathParameters as GetParams;
 
   try {
-    const { Item: item } = await getItem(pathParameters?.todoId);
+    const { Item: item } = await getItem(params.todoId);
 
     return {
       statusCode: 200,
@@ -135,7 +144,7 @@ export const retrieveTodo = async (event: APIGatewayProxyEvent) => {
   }
 };
 
-export const retrieveTodos = async (event: APIGatewayProxyEvent) => {
+export const retrieveTodos = async (event: Event) => {
   console.log('Event received: ', JSON.stringify(event));
 
   try {

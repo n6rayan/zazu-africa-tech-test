@@ -19,7 +19,12 @@ import {
 
 import { CreateToDoPayload, UpdateToDoPayload } from '../types';
 
-const client = new DynamoDBClient({ region: 'eu-west-2' });
+const client = new DynamoDBClient({
+  region: 'eu-west-2',
+  ...(process.env.AWS_DYNAMODB_ENDPOINT && {
+    endpoint: process.env.AWS_DYNAMODB_ENDPOINT,
+  }),
+});
 
 export const createItem = async (
   data: CreateToDoPayload

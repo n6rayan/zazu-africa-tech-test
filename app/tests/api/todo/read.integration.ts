@@ -26,8 +26,11 @@ describe('Read ToDo', () => {
 
   afterAll(async () => {
     // perform cleanup
-    await Promise.all([request.delete(`/api/todos/${todoOne.id}`), request.delete(`/api/todos/${todoTwo.id}`)]);
-  })
+    await Promise.all([
+      request.delete(`/api/todos/${todoOne.id}`),
+      request.delete(`/api/todos/${todoTwo.id}`),
+    ]);
+  });
 
   describe('GET /todos', () => {
     it('should return a 200 and all the todos', async () => {

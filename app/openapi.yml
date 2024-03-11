@@ -4,7 +4,7 @@ info:
   description: Zazu Africa Test REST API
   version: 'v1'
 servers:
-  - url: https://some-url/api
+  - url: https://bh1p4vz8mi.execute-api.eu-west-2.amazonaws.com/dev/api
     description: Deployed environment
   - url: http://localhost:{port}
     description: Local development environment
