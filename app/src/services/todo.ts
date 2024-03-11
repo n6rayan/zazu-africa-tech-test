@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
 import { Event } from '@middy/http-json-body-parser';
 
@@ -41,7 +41,7 @@ export const createTodo = async (
       statusCode: 201,
       body: JSON.stringify(todo.Attributes ?? todoPayload),
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.log('Problem creating todo in Dynamo: ', err);
 
     return {
@@ -78,7 +78,7 @@ export const updateTodo = async (event: Event) => {
         createdAt: todo.Attributes?.createdAt.S,
       }),
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.log('Problem updating the todo item in Dynamo: ', err);
 
     return {
@@ -102,7 +102,7 @@ export const removeTodo = async (event: Event) => {
       statusCode: 204,
       body: JSON.stringify({}),
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.log('Problem deleting the todo from Dynamo: ', err);
 
     return {
@@ -132,7 +132,7 @@ export const retrieveTodo = async (event: Event) => {
         modifiedAt: item?.modifiedAt.S,
       }),
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.log('Problem retrieving the todo item from Dynamo: ', err);
 
     return {
@@ -165,7 +165,7 @@ export const retrieveTodos = async (event: Event) => {
       statusCode: 200,
       body: JSON.stringify(todos),
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.log('Problem retrieving the todo item from Dynamo: ', err);
 
     return {
