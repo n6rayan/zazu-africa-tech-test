@@ -162,7 +162,7 @@ export const retrieveTodos = async (event: APIGatewayProxyEvent) => {
     return {
       statusCode: err.$metadata.statusCode ?? 500,
       body: JSON.stringify({
-        error: 'There was a problem retrieving the todo item',
+        error: 'There was a problem retrieving the todo items',
       }),
     };
   }

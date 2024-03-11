@@ -18,9 +18,8 @@ import {
 } from '@aws-sdk/client-dynamodb';
 
 import { CreateToDoPayload, UpdateToDoPayload } from '../types';
-import config from '../config';
 
-const client = new DynamoDBClient({ ...config.dynamodb });
+const client = new DynamoDBClient({ region: 'eu-west-2' });
 
 export const createItem = async (
   data: CreateToDoPayload

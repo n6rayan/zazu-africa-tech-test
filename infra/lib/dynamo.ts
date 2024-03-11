@@ -9,6 +9,7 @@ export class DynamoStack extends Stack {
     new TableV2(this, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
       tableName: 'todo-table',
+      // To make sure it's torn down straight away when calling `cdk destroy`
       removalPolicy: RemovalPolicy.DESTROY,
     });
   }
