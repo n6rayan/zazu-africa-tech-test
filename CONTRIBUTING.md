@@ -9,16 +9,23 @@ Run the commands below from inside the relevant directory.
 
 ## Prerequisites
 
-- Node.js 20 (see `app/.nvmrc`; with nvm run `nvm use` inside `app/`)
+- Node.js 20 is required (see `app/.nvmrc`; with nvm run `nvm use` inside `app/`). Other versions, such as Node 22, are not supported: `npm start` fails there with a serverless plugin error
 - npm (bundled with Node.js)
 - Docker with Docker Compose, if you want the preconfigured local setup
 - AWS credentials are only needed to deploy the CDK stack, not for local development
 
 ## Install dependencies
 
+From `app/`:
+
 ```shell
-cd app && npm ci     # or `npm i`
-cd infra && npm ci   # only if you are working on the infrastructure
+npm ci     # or `npm i`
+```
+
+From `infra/` (only if you are working on the infrastructure):
+
+```shell
+npm ci
 ```
 
 ## Run the app locally
@@ -49,7 +56,7 @@ The `app/` tests are integration tests (`app/tests/**/*.integration.ts`) that ca
 npm run test:integration
 ```
 
-The `infra/` project has a Jest test, run from `infra/`:
+The `infra/` project has a placeholder Jest test (the CDK template default, so it always passes), run from `infra/`:
 
 ```shell
 npm test
@@ -66,3 +73,5 @@ npm run pretty:write   # fix Prettier formatting
 ```
 
 Please run `npm run lint` and `npm run pretty:check` before opening a pull request.
+
+Note: `npm run pretty:check` currently reports formatting problems in `tests/api/todo/create.integration.ts` and `tests/api/todo/update.integration.ts`, which predate your changes. Just make sure you don't add new ones.
