@@ -25,7 +25,7 @@ describe('Create ToDo', () => {
 
     expect(response.statusCode).toEqual(400);
     expect(response.body).toEqual({
-      errors: 'Description must be a string'
+      errors: 'Description must be a string',
     });
   });
 
