@@ -1,77 +1,141 @@
 # Zazu Africa Tech Test
 
-Technical test for Zazu Africa. A basic REST API with the ability to create a todo list and store the items in DynamoDB.
+A REST API for managing a todo list, built on AWS Lambda and API Gateway with DynamoDB as the data store.
 
-## App (app directory)
+The repo has two packages:
 
-### Install Dependencies
-- `npm i`
+| Directory | Contents |
+| --------- | -------- |
+| `app`     | Serverless API (Lambda handlers, DynamoDB access, tests) |
+| `infra`   | AWS CDK stack |
 
-### Start Local Server
-- `npm start` to run without Docker (make sure Dynamo is running locally on your machine)
-- `docker compose up --build` to use the preconfigured services
+## App (`app/`)
 
-### Run Integration Tests
-- Make sure the server is running locally (see above)
-- Run `npm run test:integration`
+### Setup
 
-### Caveats
-- Serverless Offline prepends the stage to every endpoint, so if you define a `GET /todo` endpoint, when running it offline with a stage of `local`, it would actually be `GET /local/todo`
+```shell
+npm i
+```
 
-### Example Requests
+### Run locally
 
-**Create ToDo**
+Without Docker (requires a local DynamoDB instance):
+
+```shell
+npm start
+```
+
+With Docker, using the preconfigured services:
+
+```shell
+docker compose up --build
+```
+
+### Integration tests
+
+Start the server locally (see above), then run:
+
+```shell
+npm run test:integration
+```
+
+### Notes
+
+- Serverless Offline prefixes every route with the stage. With the `local` stage, `GET /todo` is served at `GET /local/todo`.
+
+### API
+
+Base URL when running locally: `http://0.0.0.0:3001/dev/api`
+
+| Method   | Path          | Description    |
+| -------- | ------------- | -------------- |
+| `POST`   | `/todos`      | Create a todo  |
+| `GET`    | `/todos`      | List all todos |
+| `GET`    | `/todos/{id}` | Get a todo     |
+| `PATCH`  | `/todos/{id}` | Update a todo  |
+| `DELETE` | `/todos/{id}` | Delete a todo  |
+
+#### Example requests
+
+Create a todo:
+
 ```shell
 curl -v -H 'Content-Type: application/json' -H 'Accept: application/json' -X POST http://0.0.0.0:3001/dev/api/todos -d '{"description": "some description"}'
 ```
 
-**Update ToDo**
+Update a todo:
+
 ```shell
 curl -v -H 'Content-Type: application/json' -H 'Accept: application/json' -X PATCH http://0.0.0.0:3001/dev/api/todos/{id} -d '{"description": "some description", "complete": true}'
 ```
 
-**Delete ToDo**
+Delete a todo:
+
 ```shell
 curl -v -X DELETE http://0.0.0.0:3001/dev/api/todos/{id}
 ```
 
-**Get ToDo**
+Get a todo:
+
 ```shell
 curl -v -X GET http://0.0.0.0:3001/dev/api/todos/{id}
 ```
 
-**Get All ToDos**
+Get all todos:
+
 ```shell
 curl -v -X GET http://0.0.0.0:3001/dev/api/todos
 ```
 
-## Infrastructure (infra directory)
+## Infrastructure (`infra/`)
 
-### Install Dependencies
-- `npm i`
+### Setup
 
-### Deploy / Destroy
-- `AWS_PROFILE=${PROFILE} aws sts assume-role --role-arn arn:aws:iam::${ACCOUNT_ID}:role/OrganizationAccountAccessRole --role-session-name cdk`
-- Export above access key, secret key and session token into your terminal
-- `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk deploy` to deploy stack
-- `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk destroy` to destroy stack
+```shell
+npm i
+```
 
-## Rationales
-- Serverless framework used for the ease of Lambda / API Gateway creation
-- Zod for request/schema validation
-- Middy used for defining Lambda middleware, making use of custom Zod validator and middy body parser
-- Docker/serverless-offline for local development (see above)
-- Prettier/ESLint for code standards
-- Jest/Supertest for integration testing
+### Deploy and destroy
 
-## Considerations
-- **Error Handling**:
-  - As mentioned in rationales, Zod is being used for validating incoming requests, mainly request bodies and path parameters
-  - With the combination of Middy, we can validate the events before the main application logic code is hit
-  - If validation passes, the logic for building the data and passing it to a Dynamo lib is wrapped in a try/catch
-  - The errors caught from these are logged for debugging purposes and a more generic error is returned to the end user
+1. Assume the target role:
 
-- **Authentication**:
-  - There are various ways authentication can be implemented for the API
-  - Assuming some sort of user management system is in place e.g. Auth0 or Cognito, when the user signs in, their access token can be forwarded in the API requests
-  - Again, a customer middleware can be created to read in the event, grab the token and validate the token against the third party provider keys
+   ```shell
+   AWS_PROFILE=${PROFILE} aws sts assume-role --role-arn arn:aws:iam::${ACCOUNT_ID}:role/OrganizationAccountAccessRole --role-session-name cdk
+   ```
+
+2. Export the returned access key, secret key and session token in your shell.
+3. Deploy the stack:
+
+   ```shell
+   AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk deploy
+   ```
+
+4. Tear it down when finished:
+
+   ```shell
+   AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk destroy
+   ```
+
+## Tooling
+
+- **Serverless Framework**: simplifies Lambda and API Gateway setup.
+- **Middy**: Lambda middleware, including the body parser and a custom Zod validator.
+- **Zod**: validates request bodies and path parameters.
+- **Docker / serverless-offline**: local development.
+- **Prettier / ESLint**: code style and linting.
+- **Jest / Supertest**: integration tests.
+
+## Design notes
+
+### Error handling
+
+- Middy runs the Zod validators on the incoming event before any handler logic executes.
+- Once validation passes, building the data and calling the DynamoDB client is wrapped in a `try/catch`.
+- Caught errors are logged, and the client receives a generic error response so internals aren't exposed.
+
+### Authentication
+
+Not implemented. A possible approach:
+
+- Use an identity provider such as Auth0 or Cognito. Clients send the access token with each API request.
+- Add a custom Middy middleware that reads the token from the event and validates it against the provider's keys (JWKS).
