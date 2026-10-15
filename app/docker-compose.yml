@@ -23,9 +23,9 @@ services:
       AWS_DYNAMODB_ENDPOINT: http://dynamodb:8000
     volumes:
       - ./:/home/node/app:cached
-    command: sh -c '
-      npx sls config credentials --overwrite --provider aws --key KEY --secret SECRET &&
-      npm start'
+      AWS_ACCESS_KEY_ID: KEY
+      AWS_SECRET_ACCESS_KEY: SECRET
+    command: npm start
     depends_on:
       dynamodb:
         condition: service_healthy
