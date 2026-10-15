@@ -74,6 +74,4 @@ npm run pretty:check   # check Prettier formatting
 npm run pretty:write   # fix Prettier formatting
 ```
 
-Please run `npm run lint` and `npm run pretty:check` before opening a pull request.
-
-Note: `npm run pretty:check` currently reports formatting problems in `tests/api/todo/create.integration.ts` and `tests/api/todo/update.integration.ts`, which predate your changes. Just make sure you don't add new ones.
+Please run `npm run lint` and `npm run pretty:check` before opening a pull request. CI runs these checks, the app integration tests and the infra build/tests on every pull request.
