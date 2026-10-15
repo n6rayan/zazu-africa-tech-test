@@ -65,22 +65,23 @@ http
       return send(res, 404, JSON.stringify({ message: 'Not Found' }));
     }
 
-    const body = await readBody(req);
-    const event = {
-      body: body || null,
-      headers: Object.fromEntries(
-        Object.entries(req.headers).map(([key, value]) => [
-          key,
-          Array.isArray(value) ? value.join(',') : value,
-        ])
-      ),
-      httpMethod: req.method,
-      path,
-      pathParameters: match.found[1] ? { todoId: match.found[1] } : null,
-      queryStringParameters: Object.fromEntries(url.searchParams),
-    } as unknown as APIGatewayProxyEvent;
-
     try {
+      const body = await readBody(req);
+      const todoId = match.found[1];
+      const event = {
+        body: body || null,
+        headers: Object.fromEntries(
+          Object.entries(req.headers).map(([key, value]) => [
+            key,
+            Array.isArray(value) ? value.join(',') : value,
+          ])
+        ),
+        httpMethod: req.method,
+        path,
+        pathParameters: todoId ? { todoId: decodeURIComponent(todoId) } : null,
+        queryStringParameters: Object.fromEntries(url.searchParams),
+      } as unknown as APIGatewayProxyEvent;
+
       const result = await match.route.handler(event, {} as never, () => null);
       send(res, result?.statusCode ?? 200, result?.body ?? '');
     } catch (error) {

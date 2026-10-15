@@ -21,10 +21,10 @@ services:
     environment:
       AWS_REGION: eu-west-2
       AWS_DYNAMODB_ENDPOINT: http://dynamodb:8000
-    volumes:
-      - ./:/home/node/app:cached
       AWS_ACCESS_KEY_ID: KEY
       AWS_SECRET_ACCESS_KEY: SECRET
+    volumes:
+      - ./:/home/node/app:cached
     command: npm start
     depends_on:
       dynamodb:

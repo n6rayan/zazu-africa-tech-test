@@ -6,7 +6,8 @@ import { DynamoStack } from "../lib/dynamo";
 
 const app = new App();
 const env = {
-  region: process.env.AWS_REGION,
+  // Pinned: app/src/libs/dynamo.ts uses eu-west-2
+  region: "eu-west-2",
   account: process.env.AWS_ACCOUNT_ID,
 };
 

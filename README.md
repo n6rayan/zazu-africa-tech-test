@@ -53,8 +53,8 @@ curl -v -X GET http://0.0.0.0:3001/dev/api/todos
 ### Deploy / Destroy
 - `AWS_PROFILE=${PROFILE} aws sts assume-role --role-arn arn:aws:iam::${ACCOUNT_ID}:role/OrganizationAccountAccessRole --role-session-name cdk`
 - Export above access key, secret key and session token into your terminal
-- `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk deploy --all` to deploy the stacks (`DynamoStack` and `ApiStack`)
-- `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk destroy --all` to destroy the stacks
+- `AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk deploy --all` to deploy the stacks (`DynamoStack` and `ApiStack`) to `eu-west-2`
+- `AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk destroy --all` to destroy the stacks
 - Run `npm ci` in `app/` first: the Lambdas are bundled from `app/src` with esbuild at synth time
 
 ## Rationales
