@@ -16,7 +16,7 @@ Technical test for Zazu Africa. A basic REST API with the ability to create a to
 - Run `npm run test:integration`
 
 ### Caveats
-- Serverless Offline prepends the stage to every endpoint, so if you define a `GET /todo` endpoint, when running it offline with a stage of `local`, it would actually be `GET /local/todo`
+- The local server (`app/src/local/server.ts`) prefixes every endpoint with the stage (`dev` by default, override with `STAGE`), like the deployed API Gateway, so `GET /api/todos` is served as `GET /dev/api/todos`
 
 ### Example Requests
 
@@ -53,14 +53,15 @@ curl -v -X GET http://0.0.0.0:3001/dev/api/todos
 ### Deploy / Destroy
 - `AWS_PROFILE=${PROFILE} aws sts assume-role --role-arn arn:aws:iam::${ACCOUNT_ID}:role/OrganizationAccountAccessRole --role-session-name cdk`
 - Export above access key, secret key and session token into your terminal
-- `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk deploy` to deploy stack
-- `AWS_REGION=${REGION} AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk destroy` to destroy stack
+- `AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk deploy --all` to deploy the stacks (`DynamoStack` and `ApiStack`) to `eu-west-2`
+- `AWS_ACCOUNT_ID=${ACCOUNT_ID} npx cdk destroy --all` to destroy the stacks
+- Run `npm ci` in `app/` first: the Lambdas are bundled from `app/src` with esbuild at synth time
 
 ## Rationales
-- Serverless framework used for the ease of Lambda / API Gateway creation
+- AWS CDK defines the whole stack (DynamoDB, Lambdas bundled with esbuild, API Gateway) in one place
 - Zod for request/schema validation
 - Middy used for defining Lambda middleware, making use of custom Zod validator and middy body parser
-- Docker/serverless-offline for local development (see above)
+- Docker and a small local HTTP server wrapping the Lambda handlers for local development (see above)
 - Prettier/ESLint for code standards
 - Jest/Supertest for integration testing
 

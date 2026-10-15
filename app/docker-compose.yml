@@ -21,11 +21,11 @@ services:
     environment:
       AWS_REGION: eu-west-2
       AWS_DYNAMODB_ENDPOINT: http://dynamodb:8000
+      AWS_ACCESS_KEY_ID: KEY
+      AWS_SECRET_ACCESS_KEY: SECRET
     volumes:
       - ./:/home/node/app:cached
-    command: sh -c '
-      npx sls config credentials --overwrite --provider aws --key KEY --secret SECRET &&
-      npm start'
+    command: npm start
     depends_on:
       dynamodb:
         condition: service_healthy
